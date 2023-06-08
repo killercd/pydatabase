@@ -138,6 +138,32 @@ def execute_select(host, database, user, password, query, port=5432):
     prettify_results([desc[0] for desc in cur.description],results)
     conn.close()
 
+def stdin_select(host, database, user, password,port=5432):
+    """Execute a select from stdin"""
+
+    conn, cur = db_connect(host, database, user, password,port)
+    query = sys.stdin.read()
+    cur.execute(query)
+    results = cur.fetchall()
+    print("Results:")
+    
+    prettify_results([desc[0] for desc in cur.description],results)
+    conn.close()
+
+def stdin_query(host, database, user, password,port=5432):
+    """Execute a query from stdin"""
+
+    conn, cur = db_connect(host, database, user, password,port)
+    query = sys.stdin.read()
+    cur.execute(query)
+    conn.commit()
+    num_rows = cur.rowcount
+    print(f"{num_rows} righe modificate.")
+    
+    
+    conn.close()
+
+
 def execute_query(host, database, user, password, query, port=5432):
     conn, cur = db_connect(host, database, user, password,port)
     cur.execute(query)
@@ -191,6 +217,8 @@ if __name__ == '__main__':
         'execute_select': execute_select,
         'search_string': search_string,
         'execute_query': execute_query,
+        'stdin_select': stdin_select,
+        'stdin_query': stdin_query,
         'report': make_report,
         'find_columns': find_columns
         
