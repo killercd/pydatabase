@@ -210,8 +210,9 @@ def search_string(host, database, user, password,search_string, port=5432, verbo
     cur.close()
     conn.close()
 
-if __name__ == '__main__':
-      fire.Fire({
+def main():
+    
+    fire.Fire({
         'list_tables': list_tables,
         'describe_table': describe_table,
         'execute_select': execute_select,
@@ -221,8 +222,6 @@ if __name__ == '__main__':
         'stdin_query': stdin_query,
         'report': make_report,
         'find_columns': find_columns
-        
-      
-      
-  })
+    })
+
 
