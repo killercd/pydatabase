@@ -16,7 +16,8 @@ def db_connect(host, database, user, password,port=5432):
     cur = conn.cursor()
     return conn, cur
 
-def find_columns(host, database, user, password, column_name, port=5432):
+
+def find_columns(host, database, user, password, column_name, show_type=False, port=5432):
     conn, cur = db_connect(host, database, user, password,port)
     
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name")
@@ -30,11 +31,13 @@ def find_columns(host, database, user, password, column_name, port=5432):
         for column in columns:
             
             if column[0].find(column_name)>=0:
-                print("FOUND {} - {}".format(table, column[0]))
+                if show_type:
+                    print("FOUND {} - {} ({})".format(table, column[0],column[1]))
+                else:
+                    print("FOUND {} - {}".format(table, column[0]))
 
     
     conn.close()
-
 def list_tables(host, database, user, password, pattern=None, port=5432, export_excel="", verbose=False):
     conn, cur = db_connect(host, database, user, password,port)
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name")
