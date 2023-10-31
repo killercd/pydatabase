@@ -213,18 +213,53 @@ def search_string(host, database, user, password,search_string, port=5432, verbo
     cur.close()
     conn.close()
 
-def main():
+def batch_select(host, database, user, password, file_name, port=5432):
+    queries = []
+
+    with open(file_name, "r") as file:
+        queries = file.read().split(";")
+    conn, cur = db_connect(host, database, user, password,port)
+    for query in queries:
+        if not query or len(query.strip())<2:
+            continue
+        cur.execute(query)
+        results = cur.fetchall()
+        print("Results:")
+        
+        prettify_results([desc[0] for desc in cur.description],results)
+    conn.close()
+
+def batch_query(host, database, user, password, file_name, port=5432):
+    queries = []
+
+    with open(file_name, "r") as file:
+        queries = file.read().split(";")
+    conn, cur = db_connect(host, database, user, password,port)
+    for query in queries:
+        if not query or len(query.strip())<2:
+            continue
+        
+        cur.execute(query)
+
+        conn.commit()
+        num_rows = cur.rowcount
+        print(f"{num_rows} righe modificate.")
+    conn.close()
+
+
+fire.Fire({
+    'list_tables': list_tables,
+    'describe_table': describe_table,
+    'execute_select': execute_select,
+    'search_string': search_string,
+    'execute_query': execute_query,
+    'stdin_select': stdin_select,
+    'stdin_query': stdin_query,
+    'report': make_report,
+    'batch_select': batch_select,
+    'batch_query': batch_query,
+    'find_columns': find_columns
     
-    fire.Fire({
-        'list_tables': list_tables,
-        'describe_table': describe_table,
-        'execute_select': execute_select,
-        'search_string': search_string,
-        'execute_query': execute_query,
-        'stdin_select': stdin_select,
-        'stdin_query': stdin_query,
-        'report': make_report,
-        'find_columns': find_columns
-    })
+})
 
 
